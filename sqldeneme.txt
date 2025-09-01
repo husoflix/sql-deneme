@@ -1,0 +1,71 @@
+SQL
+    1-
+veri çekmeye yarar
+    2- sytnx
+büyük küçük yazman bişeyi değiştirmez (select = select)
+her ifadenin sonuna ; koy
+select= veri çeker
+update=veri günceller
+delete=veri siler
+insert into=yeni veri ekler
+create database=yeni veritabanı oluşturur
+alter database=veritabanını değiştirir
+create table=yeni tablo oluşturur
+alter table=tabloyu değiştirir
+drop table=tabloyu siler
+create index=arama anahtarı oluşturur
+drop index=arama anhatarını siler
+    3-select
+eğer satır satır çekmek istiyosan select*column1 from table_name
+komple çekmek istersen select * from costumers
+    4-select distinct
+tekrarlayan valueleri bir kere sayar kalabalık yapmaz
+
+select distinc country from customers (müşterilerin ülkelerini tekrarlarsa 1 kere yazcağı anlamına gelir)
+    5-sql where
+where sorgu sonuçlarını filtrelemek için kullanılır sadece belirli koşulu karşılayan kayıtların seçilmesini sağlar
+
+!(select * from customers where country='mexico')
+metin değerleri (' ') içine sayısalar değler direkt yazılır
+= eşittir
+> büyüktür
+< küçüktür
+>=büyük eşittir
+<= küçük eşittir
+<> arasında ama eşit değil
+between arasında 
+like sembole göre arama (%&_) gibi
+in belirli değer listesinde yer alıp almadığına bakar
+(select * from customers where customerID > 80;) 
+    6-order by
+sonuç kümesini sıralamak için kullanılır 
+asc= artan
+desc= azalan demek 
+SELECT * FROM Products ORDER BY Price; (fiyata göre artan)
+SELECT * FROM Products ORDER BY Price DESC;(fiyata göre azalan)
+SELECT * FROM Products ORDER BY ProductName;(abc ye göre sıralama)
+SELECT * FROM Customers ORDER BY Country, CustomerName;( ülke içinde şehirlere göre sıralama yapar)
+karışık sıralama yapmak istersek seçtiğimiz kriterden sonra asc ya da desc yapcaz
+    7 8- and or op
+and operatörü tüm koşullar doğruysa öyle çalışır ex
+(select * from customers where country ='spain' and customerName like 'G%')
+
+or da ise biri doğru olsa yetyer yine de çalışır
+ and ile or aynı anda kullanıldıysa parantez kullanılmaıs lazım 
+    9- not op
+select * from customers where not country ='spain' (ülkesi spain olmayanları seç)
+select * from customers where customersname not like 'a%'(adı a ile başlamayan müşterileri çek)
+!!!! not adn or beraber!!!!
+select * from customers where not country = 'germany' and not country = 'türkiye'(alman ve türkleri seçme demek)
+    10 - insert into 
+
+
+
+
+
+
+
+
+
+
+
