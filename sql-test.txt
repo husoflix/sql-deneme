@@ -1,0 +1,174 @@
+SQL
+    1-
+veri çekmeye yarar
+    2- sytnx
+büyük küçük yazman bişeyi değiştirmez (select = select)
+her ifadenin sonuna ; koy
+select= veri çeker
+update=veri günceller
+delete=veri siler
+insert into=yeni veri ekler
+create database=yeni veritabanı oluşturur
+alter database=veritabanını değiştirir
+create table=yeni tablo oluşturur
+alter table=tabloyu değiştirir
+drop table=tabloyu siler
+create index=arama anahtarı oluşturur
+drop index=arama anhatarını siler
+    3-select
+eğer satır satır çekmek istiyosan select*column1 from table_name
+komple çekmek istersen select * from costumers
+    4-select distinct
+tekrarlayan valueleri bir kere sayar kalabalık yapmaz
+
+select distinc country from customers (müşterilerin ülkelerini tekrarlarsa 1 kere yazcağı anlamına gelir)
+    5-sql where
+where sorgu sonuçlarını filtrelemek için kullanılır sadece belirli koşulu karşılayan kayıtların seçilmesini sağlar
+
+!(select * from customers where country='mexico')
+metin değerleri (' ') içine sayısalar değler direkt yazılır
+= eşittir
+> büyüktür
+< küçüktür
+>=büyük eşittir
+<= küçük eşittir
+<> arasında ama eşit değil
+between arasında 
+like sembole göre arama (%&_) gibi
+in belirli değer listesinde yer alıp almadığına bakar
+(select * from customers where customerID > 80;) 
+    6-order by
+sonuç kümesini sıralamak için kullanılır 
+asc= artan
+desc= azalan demek 
+SELECT * FROM Products ORDER BY Price; (fiyata göre artan)
+SELECT * FROM Products ORDER BY Price DESC;(fiyata göre azalan)
+SELECT * FROM Products ORDER BY ProductName;(abc ye göre sıralama)
+SELECT * FROM Customers ORDER BY Country, CustomerName;( ülke içinde şehirlere göre sıralama yapar)
+karışık sıralama yapmak istersek seçtiğimiz kriterden sonra asc ya da desc yapcaz
+    7 8- and or op
+and operatörü tüm koşullar doğruysa öyle çalışır ex
+(select * from customers where country ='spain' and customerName like 'G%')
+
+or da ise biri doğru olsa yetyer yine de çalışır
+ and ile or aynı anda kullanıldıysa parantez kullanılmaıs lazım 
+    9- not op
+select * from customers where not country ='spain' (ülkesi spain olmayanları seç)
+select * from customers where customersname not like 'a%'(adı a ile başlamayan müşterileri çek)
+!!!! not adn or beraber!!!!
+select * from customers where not country = 'germany' and not country = 'türkiye'(alman ve türkleri seçme demek)
+    --10 - insert into 
+tabloya yeni kayıtlar için kullanılır
+örnek kod:
+instert into customers(customername, contactname, adress, city, postalcode, country) values('cardinal', 'tom', 'skagen', 'stavanger', …… )
+sadece istediğimiz yerlere eklemek istiyorsak istediğimiz yere insert into yazıp devamını getircez
+SELECT İNTO ile veri kopyalama 
+select * into yeni_tablo from eski_tablo where koşul;
+	11- null values
+null bilinmeyen ya da eksik anlamına gelir örneğin bi kişinin doğum tarihi bilinmiyorsa bu alan null olarak işaretlenir
+
+null değerini kontrol etmek için is null veya is not null ifadeleri kullanılır 
+
+null değerini kontrol etmek için ;
+select * from tablo_adı where sütun_adı is null;
+
+null değerini hariç tutma null olmayan değerleri listeleme;
+select * from tablo_adı where sütun_adı is not null;
+
+null değerini güncellemek için ;
+
+uptade tablo_adı
+set sütun_adı = 'yeni değer'
+where sütun_adı is null;
+	12-UPTADE
+mevcut kayıtları güncellemek için kullanılır
+ 
+uptade tablo_adı set sütun_adı1 = değer1, sütun_adı2 = değer2, where koşul
+	13-DELETE
+mevcut tablodaki kayıtları silmeye yarar
+delete from tablo_adı where koşul (!!!!EĞER WHERE YAZMAZSAN HEPSİ SİLİNİR)
+
+delete from customres where CustomerName='hüso'(tablodaki customer değeri hüso olan kaydı  siler)
+
+tüm kaydı silmek için >>> delete from customers (tablonun yapısı kalır)
+herşeyi silmek için >>> drop table customers (içeriğini yapısını komple siler)
+
+	14-TOP, LIMIT, FETCH FIRST or ROWNUM Clause
+bir sorgunun döndüreceği kayıt sırasını sınırlamak için kullanılır
+sql server>> select top
+mysql>> lımıt
+oracle>> fetch first(eski sürüm rownum)
+
+-İLK 3 KAYDI SEÇMEK İÇİN
+sql
+select top 3 * from customers;
+
+mysql
+select * 3 from customers LIMIT 3;
+
+oracle
+select * from customers fetch first 3 rows only;
+
+- OLARAK KAYITLARI SEÇME
+ilk %50 yi seçmek için
+
+select top 50 percent * from customers;
+
+-WHERE KOŞULU İLE SINIRLANDIRMA
+select top 3 * from customers where country='germany';
+
+-SIRALAMA İLE KAYIT SINIRLAMA 
+ select top * 3 from customers order by CustomerName desc;(abcye göre sondan başa göre diz ilk 3 ünü al )
+
+	15-AGREGAT fonksiyonları 
+count() bir sütundaki satır saysının döndürür
+sum() sayısal bir sütunun toplamını döndürür
+avg() sayısal sütunun ortalamasını alır
+mın() sütundaki en küçük değeri döndürür
+max()sütundaki en büyük değeri döndürür
+
+!! agregat fonkları null değerlerini göz ardı eder ancak count(*)fonksiyonu null değerlerini de sayar
+
+1. count(){toplam satır sayısını öğrenmek için}
+select count(*) from customers;
+2.sum(){sütun toplamını öğrenmek için}
+select sum(amount) from orders;
+3.avg(){ortalama değerini hesaplamak için}
+select avg(price) from product;
+4.min() ve max()
+select min(price), max(price) from product;
+select min(price) as smallestprice from products; {sayısal olarak min i gösterir}
+
+GROUP BY ile kullanımı 
+her ülkeye ait müşteri saysını öğrenmek için
+select count(customerid),country from customers group by country
+	16-like
+like operatörü where ifadesiyle birlikte kullanılır ve bir sütundaki verileri belli bir desenle karşılaştırarak seçmenizi sağlar
+select * from customers where customername like 'a&';
+
+a% > a ile başlayan değerler
+%a > a ile biten değerler
+%or% > herhangi bi yerinde or ile biten değerler
+a__% > a + en az iki karakter + devam 
+l_nd__> l + bir karakter + nd+iki karakter
+	17- wild cards */--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
