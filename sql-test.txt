@@ -151,7 +151,305 @@ a% > a ile başlayan değerler
 %or% > herhangi bi yerinde or ile biten değerler
 a__% > a + en az iki karakter + devam 
 l_nd__> l + bir karakter + nd+iki karakter
-	17- wild cards */--
+	17- wild cards 
+joker karakterler bir dizideki bir veya daha fazla karakterin yerine geçmek için kullanılır
+% >> sıfır veya daha fazla karakterin yerine geçer 
+_ >> tam olarak bir karakterin yerine geçer
+[]>> köşeli parantez içindeli karakterlerden herhangi bri tek krarkterin yerine geçer 
+
+select * from customers where customername like 'â%'; >>başında a olup ardında herhnagi bir dizi karakter gelen kayıtları getirir
+
+select * from customer where customername like '%es'; >> sonunda es olan tüm kayıtları getirir
+
+	18- in operatörü
+in operatörü where koşulunda yer alan bir sütunun belirli bir değer listesinde olup olmadığını kontrol etmek için kullanılır bu sayede birden fazla or yazmanın önüne geçer
+
+select * from customers where country in ('germany', 'france', 'UK'); >>germany france uk olan tüm kayıtları getir
+
+not in kullanımı ;
+select * from customers where country not in ('germany', 'uk'); >> içinde germany ve uk olmayan tüm değerleri getir
+
+subquery (alt sorgu) kullanımı 
+
+in op sabit değer listesinin yanı sıra subquery ile de kullanılabilir bu durumda alt sorgudan dönen değerlere göre filtre yapılır 
+select * from customers where customerid in (select customerid from orders); >>>
+ orders tablosundaki customerid bulunan müşterileri getirir
+
+aynı şekilde tam tersini almak için 
+select * from customers where customerid not in(select customerid from orders);
+	19- between
+between op bir sütündaki değerin belli bir aralıkta olup olmadığını kontrol eder. aralığın başlangıç ve bitiş değerleri sonuçlara dahildir("inclusive")
+
+select * from products where price between 10 and 20;
+	*not between 
+select * from products where price not between 10 and 20;	
+	*text değerleri için
+select * from products where productname between 'carnarvo' and 'mozerella' order by productname;
+	*date 
+select * from orders where orderdate between #07/01/1996# and #07/31/1996#;
+					     '1996-07-01' and '1996-07-31';
+	20- aliases(takma ad)
+
+sorgu sırasında geçici süreliğine yeniden adlandırarak okunmasını kolay hale getirir
+
+select customerid as id, customername as costumer from customers; >>>> customerid> id, customername> customer olarak adlandırılır
+	21- join
+join komutu iki veya daha fazla tabloyu aralarındaki ilişkili sütunlara dayanarak birleştirmek için kullanılır 
+
+
+
+1-inner join(her siparişin kim tarafından verildiğini gösterir)
+her iki tablodada eşleşen kayıtları döndürür eğer tabloda eşleşen kayıt yoksa o kayıt sonuçlard yer almaz
+
+select orders.orderid, customers.customername, orders.orderdate from orders inner join customers on orders.customerid=customers.customerid;(orders.orderid arasındaki nokta orderid nin hangi tabloda olduğunu bulmaya yarar
+
+join ve inner join gelenlde aynı anlama gelir inner isteğe bağlıdır
+
+
+2- left join(tüm müşterileri ve varsa verdikleri siparişleri listeler)
+lefft join sol tabloda yer alan tüm kayıtları getirir ve sağ tablodan eşleşen kayıtları alır eğer sağ tabloda eşleşme yoksa sonuçta bu sütunlar için null değerler döndürülür
+
+select customers.customername, orders.orderid from customers left join orders on customers.customerid order by customers.customername;
+
+şu şekilde çalışır 
+tüm cutomers kayıtlarını alır 
+customerid eşleşiyorsa orders.orderid ile birlikte listeler
+eşleşme yoksa orderid alanı null olur 
+
+neden left join kullanılmalı 
+eksik veya olmayan ilişkili verilerle birlikte ana kayıtlar görünür olur
+
+3-right join(tüm çalışanları ve varsa aldıkları siparişleri listeler sipariş almamışsa çalışanlar da null değerleriyle listelenir)
+
+sorguda belirtilen sağ tablodaki tüm kayıtları alır ve sol tablodan yalnızca eşleşen kayıtları içerir eğer sol tablodaki bir satır sağ tabloda eşleşmiyorsa sonuçta bu satır yer almaz tam tersine sağ tablodaki eşleşmeyen satırlar sol tablonun sütünlarında null ile gösterilir
+
+select orders.orderid, employees.lastname, employees.firstname from orders right join employees 
+on orders.employeesid = rmployees.employeesid order by orders.orderid;
+
+şu şekilde çalışır 
+employees tablosundaki her çalışanı listeler 
+o çalışana ait bir sipariş varsa o da listeye eklenir 
+sipariş verilmemiş çalışanlarda orderid sütununda null gösterilir
+
+neden right join kullanılır 
+ sağ tablodaki tüm kayıtların görünmesini sağlamak istersin örneğin tüm çalışanları listele ve varsa onların siparişlerini göster 
+left joinle de aynı işlem yapılır fakat tabloların yerini değiştirmek gerekir
+
+4- full join(bu sorgu tüm müşterileri ve tüm siparişleri listeler her iki tabloda da eşleşmeyen kayıtlar null değerleriyle gösterilir
+
+select customers.customername, orders.orderid from customers full outer join orders on customers.customerid = orders.customerid order by customers.customername;
+
+neden full outer join kullanılır
+hem sol hem de sağ tablodaki tüm verileri eksiksiz görmek istiyosan idealdir
+veriler arasındaki eksikleri tespit etmek için kullanılır 
+left join + right join+ inner join= full join
+
+5- self join
+bir tabloyu kendisiyle birleştirme işlemidir yani sanki tablo iki farkli tabloymuş gib davranarak aynı tablonun iki adet farklı alias kullanılmasıdır bu sayede tablo içindeki satırlar arasında ilişkiler kurulabilir
+
+select A.customername as customername1, B.customername as customername2, A.city
+from customers A, customers B
+where A.customerid <> B.customerid
+and A.city = B.city
+order by A.city;
+
+bu sorgu 
+
+customers tablosunun A ve B alieslarıyla 2 kere kullanılır
+aynı cityde olan ama farklı customerid ye sahip müşterileri listeler
+
+	22-unıon union all (birleştirme)
+union op birden fazla select sorgusunun sonuçlarını birleştirir ve ortaya çıkan sonuç kümesindeki yinelenen satırları otomatik olarak kaldırır
+union kullanım şartları tüm select sorguları aynı sütun sayısına sahip olmalı 
+sütunların veri tipleri uyumlu olmalı 
+sütunlar aynı sırada listelenmeli 
+ex
+select city from customers
+union select city from suppliers order by city;
+
+burada aynı şehir hem müşteri hem tedarikçi listesinde varsa sadece bir kez listelenir
+
+where ile birlikte kullanım 
+
+select city, country from customers 
+where country ='germany'
+union select city country from suppliers where country = 'germany'
+order by city;
+
+burada yinelenenleri kaldırarak sonuç döndürür
+
+ilave klon ve alias kullanımı 
+müşteri ve tedarikçileri ayırt etmek için alias kullanabilirsin
+
+select 'customer' as type, contactname, city, country
+from customers
+union 
+select 'supplier', contactname, city, country
+from suppliers;
+
+burada type sütunu ile her satırın customer mı yoksa supplier mi olduğu belli olur 
+
+union vs union all
+union >> yinelenen satırları otomatik kaldırır
+union all >> yinelenen satırları kaldırmaz tüm satırları gösterir
+
+	23- group by
+aynı değerlere sahip satırları gruplar ve bu gruplar üzerinde agregat fonk kullanarak özet veriler oluşmasını sağlar 
+
+select count(customerid), country
+from customers
+group by country;
+
+bu sorgu her bir ülke için kaç müşterinin kayıtlı olduğunu listeler
+
+select count(customerid), country
+from customers 
+group by country
+order by count(customerid) desc;
+
+bu sefer müşteri sayısını en fazladan en aza doğru sıralar
+
+join ile kullanımı 
+group by deyimi join işlemleriyle birlikte de sıklıkla kullanılır 
+
+select shippers.shippername, count(orders.orderid) as numberoforders
+from orders
+left join shippers on orders.shipperid = shippers.shipperid
+group by shippername;
+
+her gönderici(shipper) bazında kaç sipariş gönderildiğini listeler 
+
+neden group by kullanılmalı 
+aynı özelliğe sahip satırları gruplandırarak daha anlamlı özer veriler oluşturalmasını sağlar 
+kodunu daha düzenli ve okunabilir hale getirir
+veritabanındaki farklı kayıtları toplu işlemlerle analiz etmeye olanak tanır
+
+	24-having
+having group by ile oluşturulan gruplar üzerinde agregat fonklara dayalı filtreleme yapmak için kullanılan bir ifadedir where ifadesi agregat fonksiyonlarla kullanılmaz bu yüzden sqlde havıng eklenmiştir
+
+ülkelere göre müşteri sayısı only>5
+
+select count(customerid), country
+from customers
+group by country 
+having count(customerid) > 5;
+
+bu sorgu ülkedeki müşteri sayısı 5 den fazla olan ülkeleri listeler
+
+ek sıralama 
+select count(customerid), country
+from customers
+group by country
+havıng  count(customerıd) > 5 
+order by count(customerid) desc;
+
+bu sorgu üsttekinin aynısıdır sadece en çok müşteriden en az müşteriye doğru sıralayarak verir
+
+where ile having arasındaki fark 
+
+where >>satırları gruplandırmadan önce uygulanır bireysel satırları filtreler
+havıng >>gruplama sonrası uygulanır grupların agregat değerlerine göre filtreleme yapar
+
+	25- exist 
+bir alt sorgunun (subquery) en az bir kayıt döndürüp döndürmediğini kontrol etmek için kullanılır alt sorgu bir veya daha fazla satır dödürürse exists true döner aksi takdirde false döner bu op genlelikle ilişkili tablolarda veri varlığını kontrol etmek için kullanılır ve performans açısından da avantajlıdır çünkü alt sorgu ilk eşleşmeyi bulduğunda çalışması durur
+
+ex senaryo 
+bir customers tablonuz ve bir orders tablonuz olduğunu varsayalım bir müşterinin en az bir siparişi olup olmadıgınu kontrol etmek istiyoruz
+
+select customerid, customername
+from customers
+where exists(
+	select 1
+	from orders
+	where orders.customerid = customer.Customerid
+);
+
+	not exist
+alt sorgunu hiçbir kayıt döndürmediği durumları kontrol etmek için kullanılır 
+
+örnek: hiçbir siparişi olmayan müşterileri listelemek için 
+
+select customerid, customername
+from customers
+where not exists(
+	select 1 
+	from orders
+	where orders.customerid = customers.customersid
+);
+
+
+kullanım senaryoları 
+ilişkili verileri kontrol etme:bir tablodaki kaytdın başka bir tablodaki kayıtlarla ilişkili olup olmadığını kontrol etmkek için
+veri varlığını doğruluma: bir kaydın varlığını doğrulamak ve buna göre işlem yapmak için 
+performans optimizaysonu : büyük veri setlerinde eşleşme bulunduğunda alt sorgunun çalışmasını durdurarak performansı artırmak için
+
+	26 any all op
+any >> koşulu alt sorgudaki herhangi bir değerle sağlıyorsa true döner 
+all >>koşulunun tüm alt sorgu değerleri için true olması gerekir
+
+any
+
+select * from teachers
+where age = any ( 
+  select age from student
+);
+
+herhangi bir öğrencinin yaşına eşit yaştaki öğretmenler listelenir
+
+all
+
+select productname
+from products 
+where productid = all(
+ select product from orderdetails where quantity = 10
+);
+
+orderdetails tablosundaki tüm kayıtların miktari 10 ise ürünleri dündürür
+
+	27- select into 
+ifadesi bir tabloda yer alan veriyi kullanarak yeni bir tablo oluşturur ve bu tabloyu veri kopyalar yani hem tablonun yapısını hemde içeriğini tek adımda yeni tabloya taşır
+
+syntax
+--tüm sütunları yeni bir tabloya kopyalamak için--
+
+select * into_yeni tablo 
+from eski_tablo
+where koşul;
+
+--sadece belirli sütunları kopyala--
+select sütun1, sütunb2, …
+into yeni_tablo
+from eski_tablo
+where koşul;
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
 
 
 
