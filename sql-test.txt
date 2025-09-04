@@ -423,6 +423,93 @@ from eski_tablo
 where koşul;
 
 
+	28- insert into select
+bu ifade bir tablodan başka bir tabloya veri kopyalamak için kullanılır 	
+önemli nokta: hedef tabloda var olan kayıtlar silinmez üzerine eklenir
+
+tedarikçileri müşterilere ekleme
+
+insert into customer(customername, city, country)
+select suppliername, city, country
+from supplier;
+
+ek bilgi kaynak ve hedef tablodaki sütun tipleri uyumlu olmalı
+where ile istenen satırları filtreleyebilirsin
+join kullanarak birden fazla tablodan veri çekip eklemek mümkün
+
+insert into tablo (sütun1, sütun2, sabit_sütun)
+select sütun1, sütun2, 'sabitdeğer'
+from tablo2
+where id = 1;
+
+
+insert into >> var olan tabloya ekleme yapar
+select into >> sorgu sonucuna göre yeni tablo yapar
+	
+	29-case
+koşullu mantığı sql sorgularına dahit etmenizi sağlar yani tıpkı bir if then else yapısı gibi çalışır ilk doğru koşul sğlandığında ilgili değer döndürülür ve kontrol sonra erer eğer hiç koşul sağlanmazsa else kısmındaki değer döner else kısmı belirtilmemiş ve hiçbir koşul sağlanmamışsa sonuç null olur
+
+select orderid, quantity,
+  case 
+	when quantity > 30 then 'adet 30 dan fazla'
+	when quantity = 30 then 'adet 30'
+	else 'adet 30dan az'
+      end as quantity text
+from orderdetails;
+
+orderby içinde case 
+
+select customername, city, country
+from customers 
+orders by 	
+    case 
+	when city is null then country
+	else city
+    end ;
+
+city boşsa(null) sıralama country sütununa göre yapılır aksi halde city kullanılır
+
+gelişmiş kullanımlar ve geçerlilik 
+case çeşitli sql cümlelerinde kullanılabilir: select update delete set gibi ifadelerde geçerli bir ifade olduğu her yerde çalışır
+
+	30-null fonk(baştan bi daha bak)
+ifnull(expr,val) >> mysql>> expr null ise val değilse expr döner
+isnull>> sql server>> aynı şekilde expr null ise val değilse expr
+nvl>> oracle null ise val değilse exr
+
+	31-stored procedure(saklı yordam)
+saklı yordam önceden tanımlanmış ve veritabanında saklanan sql kodudur sıklıkla kullandığınız sql sorgularını bu şekilde kaydedebilir ve daha sonra sadece yordam adıyla çalışttırabilirsiniz ayrıca bu yordama parametrelerde gönderebilrisiniz
+
+parametresiz saklı yordam 
+
+create procedure selectallcostumers
+as
+	select * from customer;
+go;
+exec selectall customers     
+
+tek parametreli yordam
+create procedure selectallcustomers @city nvarcahr(30)
+as
+  select * from customers where city = @city;
+go;
+exec selectallcustomers @city = 'london';
+
+ek bilgi 
+saklı yordamlar bir veya daha fazla sql deyimi içeren veritabanındaki saklanan ve birlikte çalıştırılabilen tanımlı nesnelerdir 
+
+	32-comments
+yotumlar sql ifadelerinin belirli bölümlerini açıklamak veya çalıştırılmalarını engellemek için kullanılır
+-- koyduğun zaman yorum kısmına düşer
+çoklu satırlar için
+
+/*
+	
+	/*
+ 
+ 
+
+
 
 
  
