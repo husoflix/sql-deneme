@@ -1,0 +1,347 @@
+	1- create database
+sqlde yeni bir veritabanı oluşturmak için kullanılan create databse ifadesi açıkça anlatılmış temel syntaxı şu şekilde ;
+
+create database databasename;
+
+yani diyorsun ki create database testDB; komutunu girersen adında bir veri tabanı oluşturur ama bu işlemi yapabilmen için admin yetkisine sahip olman lazım oluşturduktan sonra veritabanını doğrulamak için ;
+
+Show databases;
+komutunu kullabilirsin bu komut sistemdeki tüm dbleri görmeni sağlar
+
+	2-drop database
+mevcut databaseyi tamamen silmek için kullanılır yani drop demek sistemden tamamen kaldırmak demek 
+
+örnek syntax 
+
+drop database testDB;
+DİKKAT bu işlem geri alınamaz 
+
+geliştirme test ortamında geçici veritabanlarını silmek için kullanılır 
+
+if exists kalıbı 
+
+bazı veritabanı sistemlerinde silmek istediğin veritabanı yoksa hata alırsın. ama bu olasılığı önlemek için şöyle yazabilirsin 
+
+drop database id exists veritabaniadi;
+eğer veritabanı varsa siler yoksa hiçbir şey yapmadan geçer bu da özellikle otomatik scriptlerde harika 
+
+	3- backup database
+backup databaseifadesi mevcut bir veritabanında tam yedeğini (full backup)
+
+backup database testDB
+to disk = '(dosya yolu)';
+
+farklı yedekleme :differential 
+sadece değişen kısımn yedeği aldırmak için ;
+
+backup database testDB 
+to disk = '(dosyayolu)'
+with differential;
+
+bu komut hem zamandan hem alandan tasarruf sağlar
+
+	4- create table 
+sqlde yeni bir tablo oluşturmak için kullanılan komut tablo verileri anlamlı bir yapıda (satır ve sütun ) sistemde saklamak için temek yapı taşıdır
+
+create table persons(
+personid int, 
+lastname varchar(255),
+firstname varchar(255),
+address varchar(255),
+city varchar(255),
+);
+
+bu komut persons adında 5 sütunlu boş bir tablo oluşturur
+
+eğer aynı tablo zaten varsa hata almanuın canını sıkmasını istemiyorsan şöyle yazabilirsin 
+
+create table if not exists companies(
+id int,
+name varchar(50),
+adress text,
+email varchar(50),
+phone varcahr(10),
+);
+bu sayede tablo yoksa oluşturur varsa tamam zaten var diyip geçer
+
+tabloyu başkasından kopyalamak 
+create table backuptable as select * from originaltable;
+bu komut original table ın tüm sütunlarını ve verilerini backuptable adlı yeni tabloda kopyalar  
+
+püf noktası 
+not null:boş veri girilemsini engeller
+primary key: tekil ve boş olmayan bir kimlik alanı gerektiğinde harika 
+unique, check, foreign gibi constraintlerle veri bütünlüğünü sağlamlaştırabilirsin
+
+creta table students( 
+student id int not null primary key,
+name varchar(50) not null, 
+age int check (age >= 0)
+);
+
+	5- drop table
+bir tablonun tamamıyla sistemden siliyorsak işte bu komutla yapıyoruz silme işlemi ile birlikte tablo yapısı verileri sütunlar her şeyi uçup gidiyor
+
+drop table shippers;
+bu komut ilgili tabloyu ve içindeki tüm verileri siler 
+
+
+truncate table ile arasındaki fark 
+
+truncate table tablodaki verileri siler ama yapı sütun index constraint falan yerinde kalır
+
+drop  table ise tabloyu bütünüyle kaldırır 
+
+if exist ile daha güvenli kullanım (hata önleme)
+
+drop table if exist tablo_adi;
+bu sayede tablo varsa siler yoksa sorunsuz geçer hata vermeden 
+
+	6-alter table
+mevcut tabloyu değiştirmeye add, delete , modify sütun ya da constraintler eklemeye silmeye yarar hem yapı değiştirme hem de kontrol katmanında kullanılabiliyor
+
+temel syntaxlar :
+
+1-add
+
+alter table tablo_adi
+add sutun_adi veri_tipi;
+
+2-drop column (sütun silme)
+
+alter table tablo_adi
+drop column sutun_adi;
+
+3-sütun adı değiştirme 
+
+alter table tablo_adi
+rename column eski_adi to yeni_adi;
+
+4-veri  tipi değiştirme (alter/modify coulmn)
+
+alter table tablo_adi
+alter column sutun_adı yeni_veri_tipi
+
+5-constraint ekleme/silme 
+
+tabloya constraint eklemek veya çıkarmak mümkün 
+örnek foreign key (veri tutarlılığını arttırmak içi)
+
+alter table orders 
+add foreign key (personid) references person(personid);
+
+	7-constraint 
+tabloya girilecek veriyi sınırlayan doğruşuğunu ve güvenirliğini garantileyen kurallardır 
+
+en çok kullanılan costraitler 
+
+not null >>sütun boş bırakılamaz 
+unique >>her değer farklı olmalıdır
+primary key >>not null +unique ;satırları benzersiz tanımlar 
+foreign key >>tablo ilişkilerini güvence altına alır
+check >>girilen veri belirli bir koşulu sağlamalıdır
+default >>veri girilmezse otomatik bir değer atar 
+create index >> veri almay hızlandırır
+
+örnek syntaxlar:
+
+not null 
+
+create table persons (
+  id int nol null
+);
+
+
+unique
+
+create table persons(
+  id int not null unique
+);
+
+
+primary key 
+
+create table persons (
+  id int not null 
+  lastname varchar(255)
+  primary key (id)
+);
+
+
+foreign key 
+
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+);
+
+check 
+
+create table persons (
+ id int not null,
+ lastnaem varchar(255) not null,
+ firstname varchar(255),
+ age int,
+ check age (age >= 18)
+);
+
+default 
+
+create table persons (
+ id int not null ,
+ lastname varchar(255) not null,
+ firstname varchar(255),
+ age int,
+ city varchar(255) default 'sadnes'
+);
+
+create index
+
+create index index_name
+on table_name (column1, column2 …);
+
+	8-auto increment
+otomatik artan bir sütun her yeni kayıt eklendiğinde otomatik olarak benzersiz bir sayı üretiyor genellikle bir tablonun primary key sütununda bu kullanılıyor
+böylece sen id değerini elle girmezsen bu sistem senin için sırayla sayar hem pratik hem hata riskini azaltır 
+
+ ek özellikler 
+başlangıç değeri (start) ve artış miktarı(increment) gebelde tanımlanabilir örneğin sql server da identity(10,5) yaparsan yeni kayıtlar 10 dan başlar sonra 15 20 25 30 şeklinde gider 
+
+mysqlde başlangıç değerini değiştirmek için;
+ 
+alter table persons auto_increment = 100;
+gibi bir şeyle başlayacak numarayı ayarlayabilirsin
+
+	9-dates	
+mysql
+
+date format yyyy-mm-dd
+datetime format yyyy-mm-dd hh:mı:ss
+timestamps format yyyy-mm-dd hh:mı:ss
+year format yyyy or yy
+
+sql 
+
+date format yyyy-mm-dd
+datetime format yyyy-mm-dd hh:mı:ss
+smalldatetime format yyyy-mm-dd hh:mı:ss
+timestamp format a unique number
+
+
+2008-11-11 orderdateli değeri seçmek için 
+ select * from orders  where orderdates ='2008-11-11'
+
+	10-view
+sqlde sanal tablo (virtual table) demek yani fiziksel olarak veriler ayrı bi yerde saklanmaz senin yazdığın select sorgusunun sonucu her sorgulandığında dinamik oluşur 
+bir view gerçek tablolardaki sütunlardan gelir (bir veya daha fazla tabloyu kullanabilir) view kullanıca sanki tek bir tabloymuş gibi veri sunar 
+view her sorgulandığında güncel veri gösterir yani underlying(temel) tablolar değiştiyse viewın sonucu da değişir
+
+create view [brazil customers] as
+select customername, conctactname
+from customers
+where country = 'brazil';
+ Brezilyalı müşterileri sıralamaya yarar
+
+yukarıdaki görünümü aşağıdaki gibi sorgulayabiliriz 
+ 
+select * from [brazil customers];
+
+sql updating a view (create or replace view)
+
+create or replace view view_adi as.. kullnarak var olan view ı güncelleytebilrisiniz böylece yeni sütun eklemek , koşulu değiştirmek gibi işlemler için sil yeni oluıştur gibi uğraşma gerekmez
+
+view silmek "drop view" 
+
+drop view view_adi;
+bu komut view ı veritabanından siler içindeki veriyi değil viewın kendisini kaldırır 
+
+view kullanmann faydaları 
+soyutlama (abstraction) : karmaşık sorguları view içine koyarsın kullanıcılar sadece viewden select yapar arkadaki tabloların karmaşasını görmezler 
+
+güvenlik bazı sütunları ya da satırları gizleyebilirsin kullanıcı sadece izin verilen sütunları ya da satırları view aracılığıyla  
+
+
+	11- injection 
+kullanıcı girişinden gelen verinin kötü niyetli, kod ekleyerek(injection) sql sorgusuna dahil edilmesiyle oluşan saldırı tekniğidir bu saldırı veritabanına zarar verebilir hassas verileri açığa çıkarabilir ya da kontrolü ele geçirmeye sebep olabilie 
+
+bazı örnekler :
+
+
+kullanıcıdan userid isteyip bunu direkt sql sorgusuna eklemek 
+
+select * from users where userid = <kullanıcıdan gelen veri>;
+
+
+
+
+eğer kullanıcı 105 or 1=1
+
+select * from users where userid = 105 or 1=1
+
+bu sorgu her zaman doğru olur tüm kullanıcıları çeker 
+
+kullanıcı adı ve şifre alanı var :
+
+select * from users where name = " kullanıcıadı" and pass = "şifre";
+bu adı alanına " or " "=" gibi bir şeey ayzarsa sorgunun mantığı bozulur filtere etkinsizleşir ve yetkisiz erişim sağlanabilir 
+ya da saldırı şöyle olabilir kullanıcı girişine ; deop table suppliers gibi bir şey girerek tablo silme işlemi tetiklemek 
+ 
+GÜVENSİZ
+
+$user = $_POST['username'];
+$pass = $_POST['password'];
+$query = "SELECT * FROM users WHERE username = '$user' AND password = '$pass'";
+$result = mysqli_query($conn, $query);
+
+burada kullanıcı adı ya da şifre girşine " or ""=" gibi bir ifade girilirse sorgu manipüle edilebilir
+
+GÜVENLİ
+
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+$stmt->bind_param("ss", $user, $pass);
+$stmt->execute();
+$result = $stmt->get_result();
+
+burada $user ve $pass sadece değer olarak işlenir sorgunun komut kısmı değiştirilmez 
+
+
+	12-hosting
+
+web sitenizin dinamik içerik sunabilmesi için bir veritabanına ihtiyacı vardır bu veritabanı sql dilini kullanarak veri depolar ve sorgulasrs web sunucunuzun sql dilini destekleyen bir veritabanı sistemine erişimi olması gerekir eğer kendi sunucunuzda barındırma yapmıyorsanız bir internet servis sağlayıcısı (ısp) aracılığıyla sql barındırma plan aramanıız gerekebilir 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+En az 3 yorum almış olan blog yazılarını ve bu yazıların yazarlarının adlarını, toplam yorum sayılarıyla birlikte listelemek.
+ 
+Yazarlar: yazar_id, yazar_adi
+Yazilar: yazi_id, baslik, yazar_id (yazıyı yazan yazarın ID'si)
+Yorumlar: yorum_id, yazi_id (yorumun yapıldığı yazının ID'si)
+
+
+ 
+
+
+
+
+
+
+
+
+
+

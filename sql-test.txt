@@ -51,7 +51,7 @@ and operatörü tüm koşullar doğruysa öyle çalışır ex
 (select * from customers where country ='spain' and customerName like 'G%')
 
 or da ise biri doğru olsa yetyer yine de çalışır
- and ile or aynı anda kullanıldıysa parantez kullanılmaıs lazım 
+ and ile or aynı anda kullanıldıysa parant+ez kullanılmaıs lazım 
     9- not op
 select * from customers where not country ='spain' (ülkesi spain olmayanları seç)
 select * from customers where customersname not like 'a%'(adı a ile başlamayan müşterileri çek)
