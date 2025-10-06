@@ -1,0 +1,239 @@
+	1-status code 
+http durum komutları (status code) sunucunun isteğe verdiği kısa cevaplardır
+
+1xx >> bilgilendirme 
+2xx >> başarılı (istemci isteği başarıyla işlendi) örnekler :
+	200 OK > get isteği başarılı , body içinden veri alır 
+	201 created > yeni kaynak oluşturuldu (post sonrası)
+	204 no contect> başarılı ama body yok (ör: delete)
+3xx >> yönlendirme (başka bir url ye yönlendirme ) (redirect) ör: 301 moved permanently , 302 found 
+
+4xx >> istemci hataları 
+	400 bad request > geçersiz istek 
+	401 unauthorized > kimlik doğrulama başarasız
+	403 forbidden > yetki yok 
+	404 not found > kaynak yok 
+	409 conflict > çakışma 
+5xx >> sunucu hataları 
+	500 internal server error > sunucuda bişeyler patladı ama fazla detay veremem 
+	501 not implemented > sunucu bu methodu desteklemiyor (api dökümanını düzelt)
+	502 bad gateway > sunucu arka taraftan bi dönüt alamıyorsa döner 
+	503 service unavailable > sunucu geçici olarak hizmet veremiyor(bakım trafik aşırı yüklenmiş
+	
+	2-put/push/post vs (http metodları farkı)
+get >> veri alır safe (değiştirmez) idempotent(aynı isteği tekrar etmek aynı sonucu verir
+
+post >> yeni kaynak oluşturmak için kullanılır non-idempotent(aynı isteği iki kere gönderirsen iki kaynak oluşabilir)
+
+put >> kaynağı tamamen replace eder idempotent aynı put u tekrar gönderirsen sonuç aynı kalır
+
+patch >> kısmi güncelleme (sadece değişen alanlar) genelde idempotent
+
+delete >> kaynağı siler genelde idempotent
+
+push >> http/2 de server push diye farklı bir konu var (sunucunun client a kaynak psuh etmesi) genelde api tasarımında post put patch kullanılır 
+
+#yeni kullanıcı 
+
+	post/api/users   -> 201 created 
+
+#bir kullanıcıyı tamamen güncelle 
+
+	put/api/users/42 -> 200 ok
+
+#sil
+	delete/api/users/42 ->204 no content
+
+	3-dom grid sistemleri 
+dom (document object model)
+
+tarayıcı html yi parse edip bir ağaç oluşturur bu dom
+elementler(node lar) burada
+
+js ile documnet.queryselector addeventlistener createelement iel dom u okuyup değiştirebilirsin 
+
+reflow / repaint dom u değiştirmek tarayıcıda yeniden hesaplama yapar performansı düşün(büyük loop içinde dom manipülasyondan kaçın)
+
+event delegation çok sayıda benzer elemente event bağlamak yerine üst bir elemente event koyup event bubbling ile yönetmek performanslıdır
+
+	4-grid sistemleri(layout)
+css grid: 2d layout için güçlü satır/kolon bazlı tam kontrol sağlar 
+
+.grid {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   gap: 16px;
+}
+
+flexbox: 1d(tek eksen) layout için ideal özellikle hizalama ve yönlendirme için 
+
+grid sistemleri (frameworkler): bootstrap gibi frameworklerde row/col-* yapısı ile responsive grid sağlanır 
+
+ne zaman hangi biri ? 
+
+grid >> komple sayfa layoutları için
+flexbox >>öğeleri yatay dikey ortalamak için esnek kutular için 
+
+
+	5-network payload
+payload :isteğin veya cevabın gövdesi (body) içeriği:
+
+json(application/json) >  en yaygın 
+form-urlencoded > html formları için 
+multipart/dorm-data dosya upload (form+dosya)
+binary > resim video vb
+
+diğer önemli noktalar:
+content-type header doğru ayarlanmalı 
+contect-length veya chunked transfer-encoding ile gönderilir 
+compression(gzip, brotli) ile ağdan geöçen payload küçültülebilir
+güvnelik: kullanıcıdan gelen payloadu her zaman validate et ex(json schema input sanitization)
+
+
+js fetch ile json gönderme:
+	örneğin:
+fetch('/api/login',{
+  method: 'POST',
+  headers: {'content-type': 'application/json'},
+  body: json.stringify({email:'x@x.com', password'****'})
+});
+
+
+
+
+	6-HTTP VS HTTPS FARKLAR 
+
+http veriyi düz metin(plain) gönderir -güvenli değil (mitm riski yüksek)
+
+https : http üzerine tls/ssl ile şifrelenir:
+
+sağladıkları 
+	gizlilik:veri şifrelenir(sadece taraflar okuyabilir).
+	bütünlük:veri değişmemiş olmalı.
+	kimlik doğrulama:sunucunun kimliği sertifika zinciri ile doğrulanır
+
+
+!!! https daha güvenli ssl ile şifrelenmiştir aynı wifi ağında kimse göremez  
+
+sertifikalar CA tarafından imzalanır lets encrypt tls sağlar 
+
+tarayıcı etkileri https gerekli olan özelliler var ayrıdca SEO ve kullanıcı güveni iin https şart 
+
+htst siteyi zorla https e yönlendiren mekanizma 
+
+performencetls maliyetri vardı ama modern protokoller (http/2, http/3)
+ve tls optimazyoları genelde hızlıdır 
+
+
+	7-ENDPOİNTLER
+enpoint =apinin erişim noktası(url +method) örnek get/api/v1/poducts/123
+
+içerir:path, query params,headers,(auth, content-type),body(payload)
+
+rest tarzı endpointlerde kaynak isimlendirilir(/users,/posts)
+
+endpointler belgelendirilmeli (openAPİ/swagger)
+
+güvenlik:rate limiting auth(JWT,OAuth), put validaton,CORS politakaları 
+
+	8-ENDPOİNTLER NASIUL YAZILIR 
+iyi bir endpoint tasarıı için :
+
+  kaynak adları çoğul olsun :/users, /orders
+  
+  http metodunu doru kullan :get=oku, post=oluştur, put/patch=güncelle
+delete=sil
+
+  path param : /users/:id belirli bir kaynak 
+  
+  query param :filtreleme, sayfalama /posts?limit=10&page=2&sort=-date
+
+  versiyonlama /api/v1/… veya header tabanl versioing 
+  
+  status kodları başarılı/başarısız durumlara uygun kodu dön 
+  
+  consistency küçük harf tire - tercih et (/user-profiles) boşluk falan kullanma 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
