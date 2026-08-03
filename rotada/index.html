@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ROTADA | Akıllı Rota Planlayıcı</title>
+
+    <meta name="description" content="Şehirler arası akıllı rota planlama uygulaması">
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+
+            ROTADA
+
+        </div>
+
+        <ul class="menu">
+
+            <li><a href="#">Ana Sayfa</a></li>
+
+            <li><a href="#">Harita</a></li>
+
+            <li><a href="#">Hakkında</a></li>
+
+            <li><a href="#">İletişim</a></li>
+
+        </ul>
+
+    </nav>
+
+</header>
+
+
+
+<main>
+
+<section class="hero">
+
+    <h1>
+
+        Akıllı Şehirler Arası
+
+        <span>Rota Planlayıcı</span>
+
+    </h1>
+
+    <p>
+
+        En uygun güzergâhı oluştur,
+
+        mesafeyi hesapla,
+
+        hava durumunu görüntüle.
+
+    </p>
+
+</section>
+
+
+
+<section class="planner">
+
+<h2>Rota Oluştur</h2>
+
+<div class="planner-box">
+
+<select id="startCity">
+
+<option selected disabled>
+
+Başlangıç Şehri
+
+</option>
+
+</select>
+
+<select id="endCity">
+
+<option selected disabled>
+
+Varış Şehri
+
+</option>
+
+</select>
+
+<button id="addStop">
+
++ Durak Ekle
+
+</button>
+
+<button id="calculate">
+
+Rotayı Oluştur
+
+</button>
+
+</div>
+
+</section>
+
+
+
+<section class="results">
+
+<h2>Rota Bilgileri</h2>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Mesafe</h3>
+
+<p>-</p>
+
+</div>
+
+<div class="card">
+
+<h3>Süre</h3>
+
+<p>-</p>
+
+</div>
+
+<div class="card">
+
+<h3>Trafik</h3>
+
+<p>-</p>
+
+</div>
+
+<div class="card">
+
+<h3>Hava Durumu</h3>
+
+<p>-</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section class="map">
+
+<h2>Harita</h2>
+
+<div id="map">
+
+Harita burada görüntülenecek.
+
+</div>
+
+</section>
+
+</main>
+
+
+
+<footer>
+
+<p>
+
+Created by
+
+<strong>Hüseyin Yiğit YEŞİL</strong>
+
+</p>
+
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
